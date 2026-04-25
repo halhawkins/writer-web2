@@ -1,0 +1,84 @@
+.app-menu-bar {
+    display: flex;
+    flex-direction: column;    
+    -webkit-tap-highlight-color: transparent;
+    background-color: transparent;
+    user-select: none;
+    vertical-align: middle;
+    appearance: none;
+    -webkit-box-flex: 1;
+    flex-grow: 1;
+    -webkit-box-pack: start;
+    justify-content: flex-start;
+    -webkit-box-align: center;
+    position: relative;
+    min-width: 0px;
+    box-sizing: border-box;
+    width: 100%;
+    text-align: left;
+    color: rgb(43, 43, 43);
+    cursor: pointer;
+    opacity: 1;
+    display: flex;
+    outline: 0px;
+    border-width: 0px;
+    border-style: initial;
+    border-color: initial;
+    border-image: initial;
+    margin: 0px 0px 2px;
+    text-decoration: none;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    padding: 10px 12px;
+    border-radius: 8px;
+    gap: 15px;
+}
+.app-menu {
+    background: #a3c0d4;
+    background: linear-gradient(299deg,rgba(163, 192, 212, 1) 0%, rgba(195, 230, 227, 1) 100%);
+}
+.app-menu li{
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.app-menu li:hover {
+    background-color: #e8e8e8;
+}
+
+.app-menu-item {
+    display: flex;
+    padding: 4px 10px;
+}
+.app-menu-item:hover {
+    background-color: #0000000a;
+}
+.menu-icon-container {
+    flex-shrink: 0;
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0px;
+    padding: 0px;
+    cursor: pointer;
+    color: inherit;
+    min-width: 0px;
+}
+.menu-item-text {
+    flex: 1 1 auto;
+    min-width: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-left: 12px;
+}
+.logo-menu-bar {
+    white-space: nowrap;
+    overflow: visible;
+    -webkit-line-clamp: 1;
+    display: block;
+    padding: 15px 22px;
+    text-overflow: ellipsis;
+}

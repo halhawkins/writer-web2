@@ -1,0 +1,15 @@
+.dlg-screen-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    flex-basis: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+}
+
+.dlg-box {
+
+}

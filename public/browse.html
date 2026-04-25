@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SVG Inspector</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #111;
+      color: #eee;
+      margin: 0;
+      padding: 1rem 2rem;
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 1.4rem;
+    }
+    #controls {
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    #search {
+      padding: 0.3rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #444;
+      background: #222;
+      color: #eee;
+    }
+    #sizeRange {
+      width: 200px;
+    }
+    #list {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #list td {
+      padding: 0.5rem;
+      vertical-align: middle;
+      border-bottom: 1px solid #333;
+    }
+    .preview img {
+      display: block;
+      max-height: 120px;
+      max-width: 200px;
+    }
+    .filename {
+      font-size: 0.9rem;
+      color: #ccc;
+      word-break: break-all;
+    }
+    a.open {
+      color: #7fb3ff;
+      text-decoration: none;
+      margin-left: 1rem;
+      font-size: 0.8rem;
+    }
+    a.open:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>SVG Inspector</h1>
+
+  <div id="controls">
+    <label>
+      <span>Filter:</span>
+      <input id="search" type="text" placeholder="Type to filter…" />
+    </label>
+    <label>
+      <span>Size:</span>
+      <input id="sizeRange" type="range" min="60" max="300" value="120" />
+      <span id="sizeLabel">120px</span>
+    </label>
+  </div>
+
+  <table id="list"></table>
+
+  <script>
+    // Add your SVG filenames here
+    const svgFiles = [
+      // "icon1.svg",
+      // "logo.svg",
+      // "diagram.svg"
+    ];
+
+    const table = document.getElementById("list");
+    const searchInput = document.getElementById("search");
+    const sizeRange = document.getElementById("sizeRange");
+    const sizeLabel = document.getElementById("sizeLabel");
+
+    function render(filter = "") {
+      table.innerHTML = "";
+      const f = filter.toLowerCase().trim();
+
+      svgFiles
+        .filter(name => !f || name.toLowerCase().includes(f))
+        .forEach(name => {
+          const row = document.createElement("tr");
+
+          const previewCell = document.createElement("td");
+          previewCell.className = "preview";
+
+          const img = document.createElement("img");
+          img.src = name;
+          img.alt = name;
+          img.style.maxHeight = sizeRange.value + "px";
+
+          previewCell.appendChild(img);
+
+          const nameCell = document.createElement("td");
+          nameCell.className = "filename";
+          nameCell.textContent = name;
+
+          const link = document.createElement("a");
+          link.href = name;
+          link.target = "_blank";
+          link.className = "open";
+          link.textContent = "open";
+
+          nameCell.appendChild(link);
+
+          row.appendChild(previewCell);
+          row.appendChild(nameCell);
+
+          table.appendChild(row);
+        });
+    }
+
+    searchInput.addEventListener("input", () => render(searchInput.value));
+    sizeRange.addEventListener("input", () => {
+      sizeLabel.textContent = sizeRange.value + "px";
+      render(searchInput.value);
+    });
+
+    sizeLabel.textContent = sizeRange.value + "px";
+    render();
+  </script>
+</body>
+</html>

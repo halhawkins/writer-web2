@@ -1,0 +1,70 @@
+.setting-panel-container {
+    position: absolute;
+    width: 50%;
+    flex-basis: 50%;
+    padding: 1em;
+    padding-top: 2.5em;
+    display: flex;
+    /* flex-direction: column; */
+    flex-basis: auto;
+    flex-grow: 0;
+    flex-shrink: 0;
+    background-color: darkcyan;
+}
+.settings-panel {
+    flex-basis: 480px;
+    flex-direction: column;
+    flex-grow: 0;
+    flex-shrink: 0;
+    gap: 1.2rem;
+    display: flex;
+    align-items: flex-start;
+}
+.preview-container {
+    flex-basis: auto;
+    flex-grow: 1;
+    flex-shrink: 1;
+    /* display: flex; */
+    background-color: white;
+}
+.preceding-text {
+    color: lightgray;
+}
+.following-text {
+    color: lightgray;
+}
+.settings-row {
+    display: flex;
+    gap: 32px;
+    width: 100%;
+    align-items: center;
+}
+.settings-label {
+    width: 70px;
+}
+.full-window-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #0000007f;
+}
+.settings-panel-topbar {
+    display: flex;
+    justify-content: flex-end;
+    /* align-items: center; */
+    padding: 1em;
+    /* background-color: darkgray; */
+    /* color: white; */
+    font-size: 1.2rem;
+    gap: 1em;
+}
+.close-button {
+    position: absolute;
+    background-color: lightgray;
+    top: 4px;
+    right: 4px;
+}

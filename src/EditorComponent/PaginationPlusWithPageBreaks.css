@@ -1,0 +1,57 @@
+/* ─────────────────────────────────────────────────────
+   Manual Page Break  —  tiptap-pagination-plus extension
+   ───────────────────────────────────────────────────── */
+
+/**
+ * The node itself is an invisible full-width block.
+ * Its height is set dynamically by the plugin so it exactly
+ * fills the remaining space on the current page.
+ */
+.rm-manual-page-break {
+  display: block;
+  width: 100%;
+  position: relative;
+  pointer-events: none;
+  user-select: none;
+
+  min-height: 16px;
+}
+.rm-page-break-page-break {
+  isolation: isolate;
+  transform: translateZ(0);
+}
+
+
+/* "Page Break" label centred on the line */
+.rm-page-break-indicator::before {
+  /* content: 'Page Break'; */
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  font-size: 10px;
+  font-family: sans-serif;
+  color: #6b7280;
+  background: var(--rm-page-break-background, #ffffff);
+  padding: 0 10px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+/* ── Print styles ── */
+@media print {
+  /**
+   * In print the browser handles the actual page break.
+   * Collapse the node to zero height so it takes no space,
+   * but keep page-break-before so the OS/browser honors it.
+   */
+  .rm-manual-page-break {
+    height: 0 !important;
+    min-height: 0 !important;
+    page-break-before: always;
+    break-before: page;
+  }
+
+  .rm-page-break-indicator {
+    display: none;
+  }
+}

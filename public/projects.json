@@ -1,0 +1,27 @@
+{
+    "projects": [
+        {
+            "name": "Project 1",
+            "items": [
+                {
+                    "name": "Chapter_1",
+                    "type": "formatted-text",
+                    "date": "2022-01-01",
+                    "autor": "John Doe"
+                },
+                {
+                    "name": "Chapter_2",
+                    "type": "formatted-text",
+                    "date": "2022-01-02",
+                    "author": "John Doe"
+                },
+                {
+                    "name": "world/timeline.tml",
+                    "type": "timeline",
+                    "date": "2022-01-01",
+                    "author": "John Doe"
+                }
+            ]
+        }
+    ]
+}
