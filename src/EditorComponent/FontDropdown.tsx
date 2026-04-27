@@ -34,6 +34,11 @@ const FontDropdown: FC<FontDropdownProps> = ({ editor }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [selectedFont, setSelectedFont] = useState("");
     const fontdropdownRef = useRef<HTMLDivElement>(null);
+    const [activeFormats, setActiveFormats] = useState({
+        bold: false,
+        fontFamily: '',
+        fontSize: '12pt',
+    });
     const dispatch = useDispatch();
 
     // Fetch the system fonts on mount
@@ -54,6 +59,34 @@ const FontDropdown: FC<FontDropdownProps> = ({ editor }) => {
 
         loadFonts();
     }, []);
+
+      useEffect(() => {
+        if (!editor) return;
+
+        const updateFontDropdown = () => {
+            setActiveFormats({
+                bold: editor.isActive('bold'),
+                fontFamily: editor.getAttributes('textStyle').fontFamily,
+                fontSize: editor.getAttributes('textStyle').fontSize,
+            });
+        };
+
+        // Run it once on mount to get initial state
+        updateFontDropdown();
+
+        // Subscribe to changes
+        editor.on('transaction', updateFontDropdown);
+
+        // Cleanup listener on unmount
+        return () => {
+        editor.off('transaction', updateFontDropdown);
+        };
+    }, [editor]); // Re-run if the editor instance itself changes
+
+    useEffect(() => {
+        console.log("Editor state changed:", activeFormats);
+    }, [activeFormats]);
+
 
     useEffect(() => {
         if (editor && selectedFont) {

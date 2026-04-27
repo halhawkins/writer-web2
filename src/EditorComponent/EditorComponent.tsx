@@ -1,15 +1,14 @@
 import { FC, useEffect, useRef, useState } from "react";
 import "./EditorComponent.css";
 import { EditorContent, useEditor} from "@tiptap/react";
-import { BubbleMenu, FloatingMenu } from "@tiptap/react/menus";
+import { FloatingMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import { Image } from "@tiptap/extension-image";
 import { FontFamily } from "@tiptap/extension-font-family";
 import ResizeImage from "tiptap-extension-resize-image";
 import TextAlign from "@tiptap/extension-text-align";
-import { TableKit, TableCell, TableRow, TableHeader, Table } from "@tiptap/extension-table";
+import { TableKit } from "@tiptap/extension-table";
 import { MenuBar, TableMenu } from "./MenuBar";
-import { Gapcursor } from "@tiptap/extensions";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import Ruler from "../Ruler/Ruler";
@@ -22,25 +21,22 @@ import "./PaginationPlusWithPageBreaks.css";
 interface EditorProps {
   toggleEditor: (show: boolean) => void;
 }
-interface AnnotationData {
-  id: string;
-  text: string;
-}
+// interface AnnotationData {
+//   id: string;
+//   text: string;
+// }
 const EditorComponent:FC<EditorProps> = ({toggleEditor}) => {
     const documentState = useSelector((state: RootState) => state.project.currentDocumentContent);
     const documentWidthState = useSelector((state: RootState) => state.project.currentDocumentSize.width);
     const documentHeightState = useSelector((state: RootState) => state.project.currentDocumentSize.height);
     const doc = useSelector((state: RootState) => state.project.currentDocument);
-    const [dataFetched, setDataFetched] = useState(false);
-    const [width, setWidth] = useState<string>("8.5in");
-    const [height, setHeight] = useState<string>("11in");
     const [leftMargin, setLeftMargin] = useState<string>("1in");
     const [rightMargin, setRightMargin] = useState<string>("1in");
     const [topMargin, setTopMargin] = useState<string>("1in");
     const [bottomMargin, setBottomMargin] = useState<string>("1in");
     // const [isCtrlDown, setIsCtrlDown] = useState(false);
     const isCtrlDown = useRef(false);
-    const [zoomLevel, setZoomLevel] = useState(1.5);
+    // const [zoomLevel, setZoomLevel] = useState(1.5);
     const editorWrapperRef = useRef<HTMLDivElement>(null);
     const editorRef = useRef<HTMLDivElement>(null);
     const editor = useEditor({
@@ -112,7 +108,7 @@ const EditorComponent:FC<EditorProps> = ({toggleEditor}) => {
         return false;
       },
     },
-  })
+  });
 
   // TipTap spell check: https://www.npmjs.com/package/@farscrl/tiptap-extension-spellchecker?ref=pkgstats.com
   // TipTap pagination: https://tiptapplus.com/pagination-plus/
@@ -126,7 +122,7 @@ const EditorComponent:FC<EditorProps> = ({toggleEditor}) => {
       if (editor) {
           const content = JSON.parse(documentState);
           editor.commands.setContent(content);
-          setDataFetched(true);
+          // setDataFetched(true);
           editor.commands.focus();
       }
   }, [documentState]);
@@ -137,11 +133,11 @@ const EditorComponent:FC<EditorProps> = ({toggleEditor}) => {
 
       e.preventDefault();
 
-      setZoomLevel(z => {
-        const next = Math.max(0.25, Math.min(3, z + (e.deltaY < 0 ? 0.1 : -0.1)));
-        console.log('Zoom level:', next);
-        return next;
-      });
+      // setZoomLevel(z => {
+      //   const next = Math.max(0.25, Math.min(3, z + (e.deltaY < 0 ? 0.1 : -0.1)));
+      //   console.log('Zoom level:', next);
+      //   return next;
+      // });
     }
 
     document.body.addEventListener('wheel', handleWheel, { passive: false });
@@ -149,8 +145,6 @@ const EditorComponent:FC<EditorProps> = ({toggleEditor}) => {
   }, []/*[isCtrlDown]*/);
 
   useEffect(() => {
-    doc?.width !== undefined ? setWidth(doc.width) : setWidth(`816px`);
-    doc?.height!== undefined? setHeight(doc.height) : setHeight("1122px");
     doc?.marginTop!== undefined? setTopMargin(doc.marginTop) : setTopMargin("30px");
     doc?.marginBottom!== undefined? setBottomMargin(doc.marginBottom) : setBottomMargin("50px");
     doc?.marginLeft!== undefined? setLeftMargin(doc.marginLeft) : setLeftMargin("70px");

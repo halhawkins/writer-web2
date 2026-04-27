@@ -5,7 +5,7 @@ import './EditorComponent.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { setCurrentProject, setDisplayMode, setShowEditor } from '../ProjectWindow/ProjectSlice';
 import "./MenuBar.css"
 import PageFormatDlg, { ParagraphSpacingDlg } from './PageFormatDlg';
@@ -74,6 +74,15 @@ export const MenuBar:FC<MenuBarProps> = ({ editor, toggleEditor }: MenuBarProps)
     editor,
     selector: menuBarStateSelector,
   })
+
+  const [activeFormats, setActiveFormats] = useState({
+    bold: false,
+    fontFamily: 'Times New Roman',
+    fontSize: '12pt',
+    textStyle: {},
+    lineHeight: '1.5',
+    indentLevel: 0,
+  });
   
   const toSnakeCase = (str: string) => {
       const parts = str
@@ -109,7 +118,35 @@ export const MenuBar:FC<MenuBarProps> = ({ editor, toggleEditor }: MenuBarProps)
     console.log("Setting paragraph spacing:");
     setShowParagraphSpacing(!showParagraphSpacing);
   }
+  useEffect(() => {
+    if (!editor) return;
 
+    const updateToolbar = () => {
+      setActiveFormats({
+        bold: editor.isActive('bold'),
+        fontFamily: editor.getAttributes('textStyle').fontFamily,
+        fontSize: editor.getAttributes('textStyle').fontSize,
+        textStyle: editor.getAttributes('textStyle'),
+        lineHeight: editor.getAttributes('paragraph')?.lineHeight,
+        indentLevel: editor.getAttributes('paragraph')?.indent,
+      });
+    };
+
+    // Run it once on mount to get initial state
+    updateToolbar();
+
+    // Subscribe to changes
+    editor.on('transaction', updateToolbar);
+
+    // Cleanup listener on unmount
+    return () => {
+      editor.off('transaction', updateToolbar);
+    };
+  }, [editor]); // Re-run if the editor instance itself changes
+
+  // useEffect(() => {
+  //   console.log("Editor state changed:", activeFormats);
+  // }, [activeFormats]);
   return (
     <>
       <div className="control-group">
