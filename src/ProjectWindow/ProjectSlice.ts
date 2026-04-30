@@ -10,6 +10,7 @@ interface ProjectState {
     displayMode: string;
     currentDocumentSize: { width: number; height: number };
     selectedFont?: string;
+    currentDocumentDirty: boolean;
 };
 
 const initialState: ProjectState = {
@@ -19,8 +20,9 @@ const initialState: ProjectState = {
     projectPath: null,
     showEditor: false,
     displayMode: "projects", // or "documents"
-    currentDocumentSize: { width: 794, height: 1123 }, // Initialize to 0 for now, will be calculated on demand
+    currentDocumentSize: { width: 794, height: 1123 }, 
     selectedFont: undefined,
+    currentDocumentDirty: false,
 };
 
 export const projectSlice = createSlice({
@@ -59,6 +61,9 @@ export const projectSlice = createSlice({
         setFontState: (state, action) => {
             state.selectedFont = action.payload;
         },
+        setDocumentDirty: (state, action) => {
+            state.currentDocumentDirty = action.payload;
+        },
         // Add other reducers as needed
     },
 })
@@ -72,5 +77,6 @@ export const { setCurrentProject,
     addNewDocument,
     setDocumentWidth,
     setDocumentHeight,
-    setFontState } = projectSlice.actions;
+    setFontState,
+    setDocumentDirty } = projectSlice.actions;
 export default projectSlice.reducer;

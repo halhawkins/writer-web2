@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
 import { FC, useEffect, useRef, useState } from 'react';
-import { setCurrentProject, setDisplayMode, setShowEditor } from '../ProjectWindow/ProjectSlice';
+import { setCurrentProject, setDisplayMode, setDocumentDirty, setShowEditor } from '../ProjectWindow/ProjectSlice';
 import "./MenuBar.css"
 import PageFormatDlg, { ParagraphSpacingDlg } from './PageFormatDlg';
 import { BubbleMenu } from '@tiptap/react/menus';
@@ -68,6 +68,7 @@ export const MenuBar:FC<MenuBarProps> = ({ editor, toggleEditor }: MenuBarProps)
   const [showPageSettings, setShowPageSettings] = useState(false);
   const documentstate = useSelector((state: RootState) => state.project);
   const project = useSelector((state: RootState) => state.project.currentProject);
+  const dirtyDocument = useSelector((state: RootState) => state.project.currentDocumentDirty);
   // const appState = useSelector((state: RootState) => state
   const dispatch = useDispatch();
   const editorState = useEditorState({
@@ -202,6 +203,7 @@ export const MenuBar:FC<MenuBarProps> = ({ editor, toggleEditor }: MenuBarProps)
                   console.log(`[Save] Writing to file: ${filePath}`,documentstate);
                   await writeTextFile(filePath, JSON.stringify(content));
                   console.log("[Save] File written successfully.");
+                  dispatch(setDocumentDirty(false));
                   alert("File saved successfully.");
                 } catch (error) {
                   console.error("[Save] Error saving file:", error);

@@ -1,23 +1,32 @@
 import { Editor } from "@tiptap/react";
 import { useState, useEffect, useRef, FC } from "react";
 import { invoke } from "@tauri-apps/api/core"; 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "./FontDropdown.css";
 import { setFontState } from "../ProjectWindow/ProjectSlice";
+import { RootState } from "../../store";
 
 export interface FontDropdownProps {
   editor: Editor | null;
 };
 
-const FontSizeDropdown: FC<FontDropdownProps> = ({ editor }) => {
+interface FontSizeDropdownProps {
+    editor: Editor | null;
+    value: string;
+    onChange: (size: string) => void;
+}
+
+const FontSizeDropdown: FC<FontSizeDropdownProps> = ({ editor, value, onChange }) => {
     const fontSizes = [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72];
-    const [selectedFontSize, setSelectedFontSize] = useState(12);
+    const currentSize = parseInt(value, 10) || 12;
+
     return (
-        <div className="font-size-dropdown">
-            <select value={selectedFontSize} onChange={(e) => {
-                setSelectedFontSize(parseInt(e.target.value));
+        <div className="fontsize-dropdown">
+            <select value={currentSize} onChange={(e) => {
+                const newSize = e.target.value;
+                onChange(`${newSize}pt`); // Notify parent
                 if (editor) {
-                    editor.chain().focus().setFontSize(`${selectedFontSize.toString()}pt`).run();
+                    editor.chain().focus().setFontSize(`${newSize}pt`).run();
                 }
             }}>
                 {fontSizes.map((size) => (
@@ -28,8 +37,10 @@ const FontSizeDropdown: FC<FontDropdownProps> = ({ editor }) => {
     );
 }
 
+const systemFontsPromise = invoke<string[]>("get_system_fonts");
 const FontDropdown: FC<FontDropdownProps> = ({ editor }) => {
     // Specify the type for fontOptions
+    const selectedFontState = useSelector((state: RootState) => state.project.selectedFont);
     const [fontOptions, setFontOptions] = useState<string[]>([]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [selectedFont, setSelectedFont] = useState("");
@@ -45,7 +56,7 @@ const FontDropdown: FC<FontDropdownProps> = ({ editor }) => {
     useEffect(() => {
         const loadFonts = async () => {
             try {
-                const fonts = await invoke<string[]>("get_system_fonts");
+                const fonts = await systemFontsPromise;
                 setFontOptions(fonts);
                 
                 // Optionally set a default font if one isn't set yet
@@ -79,21 +90,14 @@ const FontDropdown: FC<FontDropdownProps> = ({ editor }) => {
 
         // Cleanup listener on unmount
         return () => {
-        editor.off('transaction', updateFontDropdown);
+            editor.off('transaction', updateFontDropdown);
         };
     }, [editor]); // Re-run if the editor instance itself changes
 
     useEffect(() => {
-        console.log("Editor state changed:", activeFormats);
+        setSelectedFont(activeFormats.fontFamily || ""); // Update the selected font in the dropdown based on editor state
     }, [activeFormats]);
 
-
-    useEffect(() => {
-        if (editor && selectedFont) {
-             // Just an example check: ensure your editor has the TextStyle and FontFamily extensions loaded
-             editor.chain().focus().setFontFamily(selectedFont).run();
-        }
-    }, [editor, selectedFont]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -127,7 +131,11 @@ const FontDropdown: FC<FontDropdownProps> = ({ editor }) => {
                 <div className="selected-font" style={{ fontFamily: selectedFont }}>{selectedFont || "Select Font"}</div>
                 <div className="dropdown-arrow" onClick={() => setDropdownOpen(!dropdownOpen)}><img src="/chevron-down.svg" /></div>
             </div>
-            <FontSizeDropdown editor={editor} />
+            <FontSizeDropdown editor={editor} value={activeFormats.fontSize || "12pt"} onChange={(size) => {
+                if (editor) {
+                    editor.chain().focus().setFontSize(size).run();
+                }
+            }} />
             { dropdownOpen && (
                 <div className="dropdown-content">
                     {fontOptions.map((font: string) => (

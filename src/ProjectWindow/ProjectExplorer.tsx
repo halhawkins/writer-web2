@@ -1,6 +1,7 @@
 import { FC, useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../AppContext";
 import { DirEntry, readDir, readTextFile, writeTextFile, mkdir } from "@tauri-apps/plugin-fs";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import "./ProjectWindow.css";
 import { Project, WorkDocument } from "./types";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +10,7 @@ import { RootState } from "../../store";
 import NewProjectItem from "./NewProjectItem";
 import { setSelectedCharacter, setShowCharacterEditor } from "../AppMenu/AppMenuSlice";
 
+const appWindow = getCurrentWindow();
 export interface ProjectExplorerProps {
     projectPath: string | null;
 }
@@ -51,6 +53,7 @@ const ProjectExplorer:FC<ProjectExplorerProps> = ({ projectPath }) => {
     const displayMode = useSelector((state: RootState) => state.project.displayMode);
     const projectState = useSelector((state: RootState) => state.project);
     const selectedProject = useRef<Project | null>(null); 
+    const dirtyDocument = useSelector((state: RootState) => state.project.currentDocumentDirty);
     const dispatch = useDispatch();
 
     const projectWindowStyle: React.CSSProperties = {
@@ -266,6 +269,13 @@ const ProjectExplorer:FC<ProjectExplorerProps> = ({ projectPath }) => {
     }
 
     const handleDocumentClick = async (doc: WorkDocument) => {
+        const updateTitleBar = async (title: string) => {
+            try {
+                await appWindow.setTitle(dirtyDocument ? `${title}*` : title);
+            } catch (e) {
+                console.error("Failed to set window title", e);
+            }
+        }
         const ext = doc.fileName?.substring(doc.fileName.length - 4);
         if (ext === ".ztx" || ext === ".zeb" || ext === ".zch" || ext === ".zst") { // rich text, text, character, setting
             if (selectedProject.current) {
@@ -275,9 +285,11 @@ const ProjectExplorer:FC<ProjectExplorerProps> = ({ projectPath }) => {
                 await openEditorJsonString(txt);
                 if (JSON.parse(txt).type === "character") {
                     const character = JSON.parse(txt);
+                    await updateTitleBar(`${character.name}${dirtyDocument ? "*" : ""} - Character Editor`);
                     dispatch(setSelectedCharacter(character))
                     dispatch(setShowCharacterEditor(true));
                 } else if (JSON.parse(txt).type === "doc") {
+                    await updateTitleBar(`${doc.name}${dirtyDocument ? "*" : ""} - Document Editor`);
                     dispatch(setShowEditor(true));
                     dispatch(setCurrentDocument(doc));
                 }

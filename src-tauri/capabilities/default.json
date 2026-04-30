@@ -17,6 +17,7 @@
     "dialog:allow-open",
     "dialog:allow-save",
     "dialog:allow-message",
-    "store:default"
+    "store:default",
+    "core:window:allow-set-title"
   ]
 }

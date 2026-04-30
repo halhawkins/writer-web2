@@ -9,7 +9,7 @@ import ResizeImage from "tiptap-extension-resize-image";
 import TextAlign from "@tiptap/extension-text-align";
 import { TableKit } from "@tiptap/extension-table";
 import { MenuBar, TableMenu } from "./MenuBar";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
 import Ruler from "../Ruler/Ruler";
 import { Annotation } from "../Annotations/Annotations";
@@ -17,6 +17,7 @@ import { Indent } from "../Typography/indent";
 import { LineHeight, TextStyle, FontSize } from "@tiptap/extension-text-style";
 import { PaginationPlusWithBreaks } from "../Typography/Paginationpluswithbreaks";
 import "./PaginationPlusWithPageBreaks.css";
+import { setDocumentDirty } from "../ProjectWindow/ProjectSlice";
 
 interface EditorProps {
   toggleEditor: (show: boolean) => void;
@@ -30,6 +31,7 @@ const EditorComponent:FC<EditorProps> = ({toggleEditor}) => {
     const documentWidthState = useSelector((state: RootState) => state.project.currentDocumentSize.width);
     const documentHeightState = useSelector((state: RootState) => state.project.currentDocumentSize.height);
     const doc = useSelector((state: RootState) => state.project.currentDocument);
+    const selectedFontState = useSelector((state: RootState) => state.project.selectedFont);
     const [leftMargin, setLeftMargin] = useState<string>("1in");
     const [rightMargin, setRightMargin] = useState<string>("1in");
     const [topMargin, setTopMargin] = useState<string>("1in");
@@ -39,6 +41,7 @@ const EditorComponent:FC<EditorProps> = ({toggleEditor}) => {
     // const [zoomLevel, setZoomLevel] = useState(1.5);
     const editorWrapperRef = useRef<HTMLDivElement>(null);
     const editorRef = useRef<HTMLDivElement>(null);
+    const dispatch = useDispatch();
     const editor = useEditor({
     autofocus: "end",
     extensions: [
@@ -93,6 +96,11 @@ const EditorComponent:FC<EditorProps> = ({toggleEditor}) => {
         types: ['heading', 'paragraph', 'image', 'table'],
       }),
     ], 
+    onUpdate: ({ editor }) => {
+      // const json = editor.getJSON();
+      dispatch(setDocumentDirty(true));
+      // console.log("Editor content updated:", json);
+    },
     editorProps: {
       handleKeyDown: (view, event) => {
         if (event.key === 'Tab') {
@@ -113,7 +121,7 @@ const EditorComponent:FC<EditorProps> = ({toggleEditor}) => {
   // TipTap spell check: https://www.npmjs.com/package/@farscrl/tiptap-extension-spellchecker?ref=pkgstats.com
   // TipTap pagination: https://tiptapplus.com/pagination-plus/
   // annotations: https://github.com/luccalb/tiptap-annotation-magic?tab=readme-ov-file
-  
+  // Discussion on setting title bar: https://gemini.google.com/share/ffef6af41d31 
   const switchEditor = (show: boolean) => {
     toggleEditor(show);
   }
