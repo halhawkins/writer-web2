@@ -66,6 +66,7 @@ const CharacterForm:FC<CharacterFormProps> = ({ template, initialData, onSave })
             e.preventDefault();
             onSave({
                 id: crypto.randomUUID(),
+                name: formData.name || "Unnamed Character",
                 templateId: template.id,
                 data: formData,
                 createdAt: new Date(),
